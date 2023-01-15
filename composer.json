@@ -1,0 +1,41 @@
+{
+    "name": "valinteca/package-name",
+    "description": "package description here",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Valinteca\\PackageName\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Valinteca\\PackageName\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kareem-torky",
+            "email": "kareemmfouad.dev@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "8.x-dev"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Valinteca\\PackageName\\PackageServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php vendor/bin/testbench package:discover --ansi"
+        ]
+    }
+}
