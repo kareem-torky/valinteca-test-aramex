@@ -1,6 +1,6 @@
 {
     "name": "valinteca-test/aramex",
-    "description": "package description here",
+    "description": "Aramex package from Valinteca (test)",
     "type": "library",
     "license": "MIT",
     "autoload": {
