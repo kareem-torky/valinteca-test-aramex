@@ -1,6 +1,6 @@
 <?php
 
-namespace Valinteca\PackageName\Tests;
+namespace Valinteca\Aramex\Tests;
 
 use Orchestra\Testbench\TestCase;
 

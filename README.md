@@ -1,2 +1,2 @@
-# valinteca-package-boilerplate
-A quick boilerplate used for building packages in Valinteca
+# valinteca-test-aramex
+Aramex package from Valinteca (test)

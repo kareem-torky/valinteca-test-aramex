@@ -1,16 +1,16 @@
 {
-    "name": "valinteca/package-name",
+    "name": "valinteca/aramex",
     "description": "package description here",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Valinteca\\PackageName\\": "src/"
+            "Valinteca\\Aramex\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Valinteca\\PackageName\\Tests\\": "tests/"
+            "Valinteca\\Aramex\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -29,7 +29,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Valinteca\\PackageName\\PackageServiceProvider"
+                "Valinteca\\Aramex\\PackageServiceProvider"
             ]
         }
     },
