@@ -10,7 +10,7 @@ composer require valinteca-test/aramex
 
 2- Publish vendor
 ```
-php artisan vvendor:publish --provider="Valinteca\Aramex\PackageServiceProvider"
+php artisan vendor:publish --provider="Valinteca\Aramex\PackageServiceProvider"
 ```
 
 ### Example
