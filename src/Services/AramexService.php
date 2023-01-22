@@ -18,6 +18,7 @@ class AramexService
     public function createShipment($order) {
         // try {
             $response = $this->client->createShipment($this->getShipmentParams($order));
+            dd($this->getShipmentParams($order), $response);
             // $processedShipment = optional($response->Shipments)->ProcessedShipment;
             // if (! $processedShipment) {
             //     throw ValidationException::withMessages([
@@ -116,9 +117,9 @@ class AramexService
                     'ShippingDateTime'       => $order['delivery']['shipping_date_time'],
                     'DueDate'                => $order['delivery']['due_date'],
                     'PickupLocation'         => $order['delivery']['pickup_location'],
-                    // 'PickupGUID'             => '',
-                    // 'AccountingInstrcutions' => '',
-                    // 'OperationsInstructions' => '',
+                    'PickupGUID'             => '',
+                    'AccountingInstrcutions' => '',
+                    'OperationsInstructions' => '',
 
                     'Details' => [
                         'Dimensions' => [
@@ -134,7 +135,7 @@ class AramexService
                         'ProductGroup'       => isset($order['product_group']) ? $order['product_group'] : config('aramex.product_group'),
                         'ProductType'        => isset($order['product_type']) ? $order['product_type'] : config('aramex.product_type'),
                         'PaymentType'        => isset($order['payment_type']) ? $order['payment_type'] : config('aramex.payment_type'),
-                        'PaymentOptions'     => isset($order['payment_options']) ? $order['payment_options'] : config('aramex.payment_options'),
+                        'PaymentOptions'     => '',
                         'Services'           => $services,
                         'NumberOfPieces'     => $order['specifications']['number_of_pieces'],
                         'DescriptionOfGoods' => '',
