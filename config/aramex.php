@@ -9,10 +9,10 @@
 return [
     'ENV'                   => env('ARAMEX_ENV', 'TEST'),
 
-    'account_country_code'  => env('ARAMEX_COUNTRY_CODE', 'JO'),
-    'account_entity'        => env('ARAMEX_ACCOUNT_ENTITY', 'AMM'),
-    'account_number'        => env('ARAMEX_ACCOUNT_NUMBER', '20016'),
-    'account_pin'           => env('ARAMEX_ACCOUNT_PIN', '331421'),
+    'account_country_code'  => env('ARAMEX_COUNTRY_CODE', 'GB'),
+    'account_entity'        => env('ARAMEX_ACCOUNT_ENTITY', 'LON'),
+    'account_number'        => env('ARAMEX_ACCOUNT_NUMBER', '102331'),
+    'account_pin'           => env('ARAMEX_ACCOUNT_PIN', '321321'),
     'username'              => env('ARAMEX_USERNAME', 'testingapi@aramex.com'),
     'password'              => env('ARAMEX_PASSWORD', 'R123456789$r'),
     'version'               => env('ARAMEX_VERSION', 'v1'),

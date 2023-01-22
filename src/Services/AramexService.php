@@ -20,34 +20,36 @@ class AramexService
 
         try {
             $response = $this->client->createShipment($params);
-            $processedShipment = optional($response->Shipments)->ProcessedShipment;
-            if (! $processedShipment) {
-                throw ValidationException::withMessages([
-                    'error' =>  __('error.something_went_wrong'),
-                ]);
-            }
+            dd($response);
+            // $processedShipment = optional($response->Shipments)->ProcessedShipment;
+            // if (! $processedShipment) {
+            //     throw ValidationException::withMessages([
+            //         'error' =>  __('error.something_went_wrong'),
+            //     ]);
+            // }
 
-            if (isset($response->HasErrors) && $response->HasErrors){
-                if (isset($response->Notifications->Notification->Message)) {
-                    $message = $response->Notifications->Notification->Message;
+            // if (isset($response->HasErrors) && $response->HasErrors){
+            //     if (isset($response->Notifications->Notification->Message)) {
+            //         $message = $response->Notifications->Notification->Message;
 
-                    if ($response->Notifications->Notification->Code == 'ERR03') {
-                        $message = 'هذا الحساب محظور. الرجاء التواصل مع الإدارة';
-                    }
+            //         if ($response->Notifications->Notification->Code == 'ERR03') {
+            //             $message = 'هذا الحساب محظور. الرجاء التواصل مع الإدارة';
+            //         }
 
-                    throw ValidationException::withMessages([
-                        'carrier_id' =>  $message,
-                    ]);
-                } 
-            }
+            //         throw ValidationException::withMessages([
+            //             'carrier_id' =>  $message,
+            //         ]);
+            //     } 
+            // }
 
-            if (isset($processedShipment->HasErrors) && $processedShipment->HasErrors && isset($processedShipment->Notifications->Notification->Message)){
-                throw ValidationException::withMessages([
-                    'carrier_id' =>  $processedShipment->Notifications->Notification->Message,
-                ]);
-            }
+            // if (isset($processedShipment->HasErrors) && $processedShipment->HasErrors && isset($processedShipment->Notifications->Notification->Message)){
+            //     throw ValidationException::withMessages([
+            //         'carrier_id' =>  $processedShipment->Notifications->Notification->Message,
+            //     ]);
+            // }
 
-            return $processedShipment;
+            return $response;
+            // return $processedShipment;
             // return [
             //     'tracking_number' => $processedShipment->ID,
             //     'label_url' => $processedShipment->ShipmentLabel->LabelURL,
@@ -106,6 +108,8 @@ class AramexService
 
     private function getShipmentParams($order)
     {
+        $services = isset($order['services']) ? $order['services'] : config('aramex.services');
+
         return [
             'Shipments' => [
                 'Shipment' => [
@@ -130,11 +134,11 @@ class AramexService
                             'Value' => $order['specifications']['weight'],
                             'Unit'  => $order['specifications']['weight_unit'],
                         ],
-                        'ProductGroup'       => $order['product_group'] ?? config('aramex.product_group'),
-                        'ProductType'        => $order['product_type'] ?? config('aramex.product_type'),
-                        'PaymentType'        => $order['payment_type'] ?? config('aramex.payment_type'),
-                        'PaymentOptions'     => $order['payment_options'] ?? config('aramex.payment_options'),
-                        'Services'           => $order['services'] ?? config('aramex.services'),
+                        'ProductGroup'       => isset($order['product_group']) ? $order['product_group'] : config('aramex.product_group'),
+                        'ProductType'        => isset($order['product_type']) ? $order['product_type'] : config('aramex.product_type'),
+                        'PaymentType'        => isset($order['payment_type']) ? $order['payment_type'] : config('aramex.payment_type'),
+                        'PaymentOptions'     => isset($order['payment_options']) ? $order['payment_options'] : config('aramex.payment_options'),
+                        'Services'           => $services,
                         'NumberOfPieces'     => $order['specifications']['number_of_pieces'],
                         'DescriptionOfGoods' => '',
                         'GoodsOriginCountry' => '',
@@ -155,7 +159,7 @@ class AramexService
         
             'ClientInfo' => $this->getClientInfo(),
             'LabelInfo'   => [
-                'ReportID'   =>  $order['services'] == 'CODS' ? 9729 : 9201,
+                'ReportID'   =>  $services == 'CODS' ? 9729 : 9201,
                 'ReportType' => 'URL',
             ],
         ];
