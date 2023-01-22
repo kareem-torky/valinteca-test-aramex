@@ -16,11 +16,8 @@ class AramexService
     }
 
     public function createShipment($order) {
-        $params = $this->getShipmentParams($order);
-
-        try {
-            $response = $this->client->createShipment($params);
-            dd($response);
+        // try {
+            $response = $this->client->createShipment($this->getShipmentParams($order));
             // $processedShipment = optional($response->Shipments)->ProcessedShipment;
             // if (! $processedShipment) {
             //     throw ValidationException::withMessages([
@@ -54,10 +51,10 @@ class AramexService
             //     'tracking_number' => $processedShipment->ID,
             //     'label_url' => $processedShipment->ShipmentLabel->LabelURL,
             // ];
-        }catch (SoapFault $fault) {
-            die('Error : ' . $fault->faultstring);
-        }
-
+        // } 
+        // catch (SoapFault $fault) {
+        //     die('Error : ' . $fault->faultstring);
+        // }
     }
 
     public function fetchCountries()
