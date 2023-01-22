@@ -168,7 +168,7 @@ class AramexService
     private function formatShipperData($shipper)
     {
         return [
-            'AccountNumber' => config('aramex.AccountNumber'),
+            'AccountNumber' => config('aramex.account_number'),
             'PartyAddress'  => [
                 'Line1'               => $shipper['line1'],
                 'Line2'               => $shipper['line2'] ?? '',
@@ -191,7 +191,7 @@ class AramexService
     private function formatConsigneeData($consignee)
     {
         return [
-            'AccountNumber' => config('aramex.AccountNumber'),
+            'AccountNumber' => config('aramex.account_number'),
             'PartyAddress'  => [
                 'Line1'               => $consignee['line1'],
                 'Line2'               => $consignee['line2'] ?? '',

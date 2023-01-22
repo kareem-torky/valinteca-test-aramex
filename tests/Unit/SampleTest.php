@@ -36,7 +36,7 @@ class AramexTest extends TestCase
             'company_name' => 'شركة النهضة',
             'email' => '',
             'phone' => '0532476784',
-            'cell_phone' => '',
+            'cell_phone' => '0532476784',
             'reference' => '',
         ];
         $consignee = [
@@ -50,7 +50,7 @@ class AramexTest extends TestCase
             'company_name' => '',
             'email' => '',
             'phone' => '0530820588',
-            'cell_phone' => '',
+            'cell_phone' => '0530820588',
             'reference' => '',
         ];
         $payment = [
