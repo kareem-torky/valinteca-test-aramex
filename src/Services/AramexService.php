@@ -112,9 +112,9 @@ class AramexService
                     'Shipper'       => $this->formatShipperData($order['shipper']),
                     'Consignee'     => $this->formatConsigneeData($order['consignee']),
                     'TransportType'          => 0,
-                    'ShippingDateTime'       => $order['shipping_date_time'],
-                    'DueDate'                => $order['due_date'],
-                    'PickupLocation'         => $order['pickup_location'],
+                    'ShippingDateTime'       => $order['delivery']['shipping_date_time'],
+                    'DueDate'                => $order['delivery']['due_date'],
+                    'PickupLocation'         => $order['delivery']['pickup_location'],
                     // 'PickupGUID'             => '',
                     // 'AccountingInstrcutions' => '',
                     // 'OperationsInstructions' => '',
@@ -149,7 +149,7 @@ class AramexService
                         'CashAdditionalAmountDescription' => '',
                     ],
 
-                    'Comments'     => $order['comment'],
+                    'Comments'     => $order['comments'],
                 ],
             ],
         
