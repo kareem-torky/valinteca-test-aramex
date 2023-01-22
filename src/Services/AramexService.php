@@ -15,8 +15,8 @@ class AramexService
         $this->client = new AramexClient;
     }
 
-    public function createShipment($shipper,$order){
-        $params = $this->getShipmentParams($shipper, $order);
+    public function createShipment($order) {
+        $params = $this->getShipmentParams($order);
 
         try {
             $response = $this->client->createShipment($params);
@@ -47,10 +47,11 @@ class AramexService
                 ]);
             }
 
-            return [
-                'tracking_number' => $processedShipment->ID,
-                'label_url' => $processedShipment->ShipmentLabel->LabelURL,
-            ];
+            return $processedShipment;
+            // return [
+            //     'tracking_number' => $processedShipment->ID,
+            //     'label_url' => $processedShipment->ShipmentLabel->LabelURL,
+            // ];
         }catch (SoapFault $fault) {
             die('Error : ' . $fault->faultstring);
         }
@@ -60,15 +61,7 @@ class AramexService
     public function fetchCountries()
     {
         $params = [
-            'ClientInfo'  => [
-                'AccountCountryCode' => 'JO',
-                'AccountEntity'      => 'AMM',
-                'AccountNumber'      => '20016',
-                'AccountPin'         => '331421',
-                'UserName'           => 'testingapi@aramex.com',
-                'Password'           => 'R123456789$r',
-                'Version'            => 'v1.0',
-            ],
+            'ClientInfo'  => $this->getClientInfo(),
         ];
         
         try {
@@ -83,15 +76,7 @@ class AramexService
     public function fetchCities($country_code)
     {
         $params = [
-            'ClientInfo'  => [
-                'AccountCountryCode' => 'JO',
-                'AccountEntity'      => 'AMM',
-                'AccountNumber'      => '20016',
-                'AccountPin'         => '331421',
-                'UserName'           => 'testingapi@aramex.com',
-                'Password'           => 'R123456789$r',
-                'Version'            => 'v1.0',
-            ],
+            'ClientInfo'  => $this->getClientInfo(),
             'CountryCode' => $country_code,
         ];
         
@@ -119,106 +104,106 @@ class AramexService
     }
 
 
-    private function getShipmentParams($shipper, $order)
+    private function getShipmentParams($order)
     {
-        $grandTotal = $order['grandTotal'];
-        $isCOD = $order['isCOD'];
-
-        $items = [];
-        foreach ($order['items'] as $item) {
-            $itemId = $item['inventory_id'];
-            $items[] = $itemId;
-        }
-
-        $params = [
+        return [
             'Shipments' => [
                 'Shipment' => [
-                    'Shipper'       => array_merge($this->getShipmentShipperInfo($shipper), [
-                        'Reference1' => "{$order['order_id']}-{$order['id']}",
-                    ]),
-                    'Consignee'     => array_merge($this->getShipmentConsigneeInfo($order['order']), [
-                        'Reference1' => "Customer #{$order['order']['customer_id']}",
-                    ]),
+                    'Shipper'       => $this->formatShipperData($order['shipper']),
+                    'Consignee'     => $this->formatConsigneeData($order['consignee']),
                     'TransportType'          => 0,
-                    'ShippingDateTime'       => time(),
-                    'DueDate'                => time(),
-                    'PickupLocation'         => 'Reception',
-                    'PickupGUID'             => '',
-                    'AccountingInstrcutions' => '',
-                    'OperationsInstructions' => '',
-        
+                    'ShippingDateTime'       => $order['shipping_date_time'],
+                    'DueDate'                => $order['due_date'],
+                    'PickupLocation'         => $order['pickup_location'],
+                    // 'PickupGUID'             => '',
+                    // 'AccountingInstrcutions' => '',
+                    // 'OperationsInstructions' => '',
+
                     'Details' => [
                         'Dimensions' => [
-                            'Length' => 10,
-                            'Width'  => 10,
-                            'Height' => 10,
-                            'Unit'   => 'cm',
+                            'Length' => $order['specifications']['length'],
+                            'Width'  => $order['specifications']['width'],
+                            'Height' => $order['specifications']['height'],
+                            'Unit'   => $order['specifications']['length_unit'],
                         ],
                         'ActualWeight' => [
-                            'Value' => 1,
-                            'Unit'  => 'Kg',
+                            'Value' => $order['specifications']['weight'],
+                            'Unit'  => $order['specifications']['weight_unit'],
                         ],
-                        'ProductGroup'       => config('valinteca-aramex.ProductGroup'),
-                        'ProductType'        => config('valinteca-aramex.ProductType'),
-                        'PaymentType'        => config('valinteca-aramex.PaymentType'),
-                        'PaymentOptions'     => config('valinteca-aramex.PaymentOptions'),
-                        'Services'           => $isCOD ? 'CODS' : config('valinteca-aramex.services'),
-                        'NumberOfPieces'     => $order['quantity_after_refund'],
+                        'ProductGroup'       => $order['product_group'] ?? config('aramex.product_group'),
+                        'ProductType'        => $order['product_type'] ?? config('aramex.product_type'),
+                        'PaymentType'        => $order['payment_type'] ?? config('aramex.payment_type'),
+                        'PaymentOptions'     => $order['payment_options'] ?? config('aramex.payment_options'),
+                        'Services'           => $order['services'] ?? config('aramex.services'),
+                        'NumberOfPieces'     => $order['specifications']['number_of_pieces'],
                         'DescriptionOfGoods' => '',
                         'GoodsOriginCountry' => '',
                         'CashOnDeliveryAmount' => [
-                            'Value'        =>  $grandTotal,
-                            'CurrencyCode' => 'SAR',
+                            'Value'        =>  $order['payment']['cash_on_delivery_amount'],
+                            'CurrencyCode' => $order['payment']['currency_code'],
                         ],
                         'CollectAmount' => [
-                            'Value'        =>   $grandTotal,
-                            'CurrencyCode' => 'SAR',
+                            'Value'        =>  $order['payment']['collect_amount'],
+                            'CurrencyCode' => $order['payment']['currency_code'],
                         ],
                         'CashAdditionalAmountDescription' => '',
                     ],
 
-                    'Comments'     => implode(",", $items),
+                    'Comments'     => $order['comment'],
                 ],
             ],
         
             'ClientInfo' => $this->getClientInfo(),
             'LabelInfo'   => [
-                'ReportID'   =>  $isCOD ? 9729 : 9201,
+                'ReportID'   =>  $order['services'] == 'CODS' ? 9729 : 9201,
                 'ReportType' => 'URL',
             ],
         ];
-
-        return $params;
     }
 
-    private function getShipmentShipperInfo($shipper)
+    private function formatShipperData($shipper)
     {
-        
         return [
-            'AccountNumber' => config('valinteca-aramex.AccountNumber'),
+            'AccountNumber' => config('aramex.AccountNumber'),
             'PartyAddress'  => [
-                'Line1'               => $shipper['address']['line_1'],
-                'Line2'               => $shipper['address']['line_2'] ?? '',
-                'Line3'               => '',
-                'City'                => "Jeddah",
-                'StateOrProvinceCode' => '',
-                'PostCode'            => $shipper['address']['zip_code'],
-                'CountryCode'         => 'SA',
+                'Line1'               => $shipper['line1'],
+                'Line2'               => $shipper['line2'] ?? '',
+                'Line3'               => $shipper['line3'] ?? '',
+                'City'                => $shipper['city'],
+                'PostCode'            => $shipper['zip_code'],
+                'CountryCode'         => $shipper['country_code'],
             ],
             'Contact'       => [
-                'Department'      => '',
-                'PersonName'      => $shipper['address']['name'],
-                'Title'           => '',
-                'CompanyName'     => config('valinteca-aramex.company_name'),
-                'PhoneNumber1'    => $shipper['address']['phone'],
-                'PhoneNumber1Ext' => '',
-                'PhoneNumber2'    => '',
-                'PhoneNumber2Ext' => '',
-                'FaxNumber'       => '',
-                'CellPhone'       => $shipper['address']['phone'],
+                'PersonName'      => $shipper['name'],
+                'CompanyName'     => $shipper['company_name'],
+                'PhoneNumber1'    => $shipper['phone'],
+                'CellPhone'       => $shipper['cell_phone'],
                 'EmailAddress'    => $shipper['email'],
-                'Type'            => '',
             ],
+            'Reference1'    => $shipper['reference'], 
+        ];
+    }
+
+    private function formatConsigneeData($consignee)
+    {
+        return [
+            'AccountNumber' => config('aramex.AccountNumber'),
+            'PartyAddress'  => [
+                'Line1'               => $consignee['line1'],
+                'Line2'               => $consignee['line2'] ?? '',
+                'Line3'               => $consignee['line3'] ?? '',
+                'City'                => $consignee['city'],
+                'PostCode'            => $consignee['zip_code'],
+                'CountryCode'         => $consignee['country_code'],
+            ],
+            'Contact'       => [
+                'PersonName'      => $consignee['name'],
+                'CompanyName'     => $consignee['company_name'],
+                'PhoneNumber1'    => $consignee['phone'],
+                'CellPhone'       => $consignee['cell_phone'],
+                'EmailAddress'    => $consignee['email'],
+            ],
+            'Reference1'    => $consignee['reference'], 
         ];
     }
 
@@ -270,52 +255,16 @@ class AramexService
         }
     }
 
-
-
-    private function getShipmentConsigneeInfo($order)
-    {
-        $address = $order['address'] ?? $order['customer']['address'];
-        $consignee = $order['customer'];
-        
-        return [
-            'AccountNumber' => config('valinteca-aramex.AccountNumber'),
-            'PartyAddress'  => [
-                'Line1'               => $address['line_1'],
-                'Line2'               => $address['line_2'] ?? '',
-                'Line3'               => '',
-                'City'                => $address['state']['aramex_name'] ?? $address['state']['name'],
-                'StateOrProvinceCode' => '',
-                'PostCode'            => $address['zip_code'],
-                'CountryCode'         => 'SA',
-            ],
-
-            'Contact' => [
-                'Department'      => '',
-                'PersonName'      => $address['name'],
-                'Title'           => '',
-                'CompanyName'     => $address['name'],
-                'PhoneNumber1'    => $address['phone'],
-                'PhoneNumber1Ext' => '',
-                'PhoneNumber2'    => '',
-                'PhoneNumber2Ext' => '',
-                'FaxNumber'       => '',
-                'CellPhone'       => $address['phone'],
-                'EmailAddress'    => $consignee['email'],
-                'Type'            => '',
-            ],
-        ];
-    }
-
     private function getClientInfo()
     {
         return [
-            'AccountCountryCode' => config('valinteca-aramex.AccountCountryCode'),
-            'AccountEntity'      => config('valinteca-aramex.AccountEntity'),
-            'AccountNumber'      => config('valinteca-aramex.AccountNumber'),
-            'AccountPin'         => config('valinteca-aramex.AccountPin'),
-            'UserName'           => config('valinteca-aramex.UserName'),
-            'Password'           => config('valinteca-aramex.Password'),
-            'Version'            => config('valinteca-aramex.Version'),
+            'AccountCountryCode' => config('aramex.account_country_code'),
+            'AccountEntity'      => config('aramex.account_entity'),
+            'AccountNumber'      => config('aramex.account_number'),
+            'AccountPin'         => config('aramex.account_pin'),
+            'UserName'           => config('aramex.username'),
+            'Password'           => config('aramex.password'),
+            'Version'            => config('aramex.version'),
         ];
     }
 }

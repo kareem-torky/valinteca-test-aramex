@@ -9,15 +9,15 @@
 return [
     'ENV'                   => env('ARAMEX_ENV', 'TEST'),
 
-    'AccountCountryCode'    => env('ARAMEX_COUNTRY_CODE', 'GB'),
-    'AccountEntity'         => env('ARAMEX_ACCOUNT_ENTITY', 'LON'),
-    'AccountNumber'         => env('ARAMEX_ACCOUNT_NUMBER', '102331'),
-    'AccountPin'            => env('ARAMEX_ACCOUNT_PIN', '321321'),
-    'UserName'              => env('ARAMEX_USERNAME', 'testingapi@aramex.com'),
-    'Password'              => env('ARAMEX_PASSWORD', 'R123456789$r'),
-    'Version'               => env('ARAMEX_VERSION', 'v1'),
+    'account_country_code'  => env('ARAMEX_COUNTRY_CODE', 'JO'),
+    'account_entity'        => env('ARAMEX_ACCOUNT_ENTITY', 'AMM'),
+    'account_number'        => env('ARAMEX_ACCOUNT_NUMBER', '20016'),
+    'account_pin'           => env('ARAMEX_ACCOUNT_PIN', '331421'),
+    'username'              => env('ARAMEX_USERNAME', 'testingapi@aramex.com'),
+    'password'              => env('ARAMEX_PASSWORD', 'R123456789$r'),
+    'version'               => env('ARAMEX_VERSION', 'v1'),
     'company_name'          => env('ARAMEX_COMPANY_NAME', 'SA'),
-    
+
     'CompanyName'  => 'Ecom ',
 
     /**                        Business Attributes
@@ -34,7 +34,7 @@ return [
      *    EXP = Express
      *    DOM = Domestic
      */
-    'ProductGroup' => env('ARAMEX_PRODUCT_GROUP', 'DOM'),
+    'product_group' => env('ARAMEX_PRODUCT_GROUP', 'DOM'),
 
     /**
      * Product Type
@@ -52,7 +52,7 @@ return [
      *    For more information naviagte to Appendix-A (Page: 51) in
      *  https://www.aramex.com/docs/default-source/resourses/resourcesdata/shipping-services-api-manual.pdf
      */
-    'ProductType'  => env('ARAMEX_PRODUCT_GROUP', 'ONP'),
+    'product_type'  => env('ARAMEX_PRODUCT_GROUP', 'ONP'),
 
     /**
      * Payment Method
@@ -63,7 +63,7 @@ return [
      *    For more information naviagte to Appendix-B (Page: 52) in
      *  https://www.aramex.com/docs/default-source/resourses/resourcesdata/shipping-services-api-manual.pdf
      */
-    'PaymentType'       => env('ARAMEX_PAYMENT_TYPE', 'P'),
+    'payment_type'       => env('ARAMEX_PAYMENT_TYPE', 'P'),
     'RefundPaymentType' => env('ARAMEX_REFUND_PAYMENT_TYPE', '3'),
 
     /**
@@ -82,7 +82,7 @@ return [
      *  Even though for more information navigate to 4.7 Shipment Details (Page: 42) in
      *  https://www.aramex.com/docs/default-source/resourses/resourcesdata/shipping-services-api-manual.pdf
      */
-    'PaymentOptions' => env('ARAMEX_PAYMENT_OPTIONS', ''),
+    'payment_options' => env('ARAMEX_PAYMENT_OPTIONS', ''),
 
     /**
      *  Service Code (Additional Services for the shipment)
