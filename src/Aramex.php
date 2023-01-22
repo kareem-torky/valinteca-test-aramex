@@ -6,9 +6,9 @@ use Valinteca\Aramex\Services\AramexService;
 
 class Aramex
 {
-    public static function createShipment($shipper, $order)
+    public static function createShipment($order)
     {
-        return (new AramexService)->createShipment($shipper, $order);
+        return (new AramexService)->createShipment($order);
     }
 
     public static function fetchCountries()
