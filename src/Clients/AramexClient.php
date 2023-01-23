@@ -15,7 +15,11 @@ class AramexClient
 
     public function createShipment($data)
     {
-        return (new SoapClient($this->api_path . "shipping.wsdl"))->CreateShipments($data);
+        // try {
+            return (new SoapClient($this->api_path . "shipping.wsdl"))->CreateShipments($data);
+        // } catch (\Throwable $th) {
+        //     return $th->getMessage();
+        // }
     }
 
     public function fetchCountries($data)

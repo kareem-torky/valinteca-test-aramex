@@ -3,8 +3,9 @@
 namespace Valinteca\Aramex\Services;
 
 use SoapFault;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 use Valinteca\Aramex\Clients\AramexClient;
+use Illuminate\Validation\ValidationException;
 
 class AramexService
 {    
@@ -16,9 +17,62 @@ class AramexService
     }
 
     public function createShipment($order) {
+        // TODO:  Null safe for array keys
+
+        // Handle response
+
+        $shipper_keys = [
+            'line1',
+            'line2',
+            'line3',
+            'city',
+            'zip_code',
+            'country_code',
+            'name',
+            'company_name',
+            'email',
+            'phone',
+            'cell_phone',
+            'reference',
+        ];
+        foreach ($shipper_keys as $key) {
+            if (! isset($order['shipper'][$key])) {
+                $order['shipper'][$key] = null;
+            }
+        }
+
+        $delivery_keys = ['shipping_date_time', 'due_date', 'pickup_location'];
+        foreach ($delivery_keys as $key) {
+            if (! isset($order['delivery'][$key])) {
+                $order['delivery'][$key] = null;
+            }
+        }
+
+        $validator = Validator::make($order, [
+            'shipper.line1' => ['required'],
+            'shipper.line2' => ['required'],
+            'shipper.line3' => ['required'],
+            'shipper.city' => ['required'],
+            'shipper.zip_code' => ['required'],
+            'shipper.country_code' => ['required'],
+            'shipper.name' => ['required'],
+            'shipper.company_name' => ['required'],
+            'shipper.email' => ['required'],
+            'shipper.phone' => ['required'],
+            'shipper.cell_phone' => ['required'],
+            'shipper.reference' => ['required'],
+
+            'delivery.shipping_date_time' => ['required'],
+            'delivery.due_date' => ['required'],
+            'delivery.pickup_location' => ['nullable'],
+        ]);
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages((array) $validator->messages());
+        }
+
         // try {
             $response = $this->client->createShipment($this->getShipmentParams($order));
-            dd($this->getShipmentParams($order), $response);
             // $processedShipment = optional($response->Shipments)->ProcessedShipment;
             // if (! $processedShipment) {
             //     throw ValidationException::withMessages([
@@ -114,8 +168,8 @@ class AramexService
                     'Shipper'       => $this->formatShipperData($order['shipper']),
                     'Consignee'     => $this->formatConsigneeData($order['consignee']),
                     'TransportType'          => 0,
-                    'ShippingDateTime'       => $order['delivery']['shipping_date_time'],
-                    'DueDate'                => $order['delivery']['due_date'],
+                    'ShippingDateTime'       => isset($order['delivery']['shipping_date_time']) ? $order['delivery']['shipping_date_time'] : null,
+                    'DueDate'                => isset($order['delivery']['due_date']) ? $order['delivery']['due_date'] : null,
                     'PickupLocation'         => $order['delivery']['pickup_location'],
                     'PickupGUID'             => '',
                     'AccountingInstrcutions' => '',
